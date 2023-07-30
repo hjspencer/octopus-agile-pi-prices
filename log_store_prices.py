@@ -16,7 +16,7 @@ import requests
 import logging
 
 # find current time and convert to year month day etc
-the_now = datetime.datetime.now(datetime.timezone.utc)
+the_now = datetime.now(datetime.timezone.utc)
 the_now_local = the_now.astimezone(pytz.timezone('Europe/London'))
 
 log_file_name = 'octolog' + the_now_local.year + the_now_local.month + the_now_local.day + '.log'
