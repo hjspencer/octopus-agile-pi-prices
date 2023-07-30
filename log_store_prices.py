@@ -10,14 +10,21 @@ import time
 from argparse import RawTextHelpFormatter
 from reprlib import Repr
 from datetime import datetime
+import pytz
 from urllib.request import pathname2url
 import requests
 import logging
 
+# find current time and convert to year month day etc
+the_now = datetime.datetime.now(datetime.timezone.utc)
+the_now_local = the_now.astimezone(pytz.timezone('Europe/London'))
+
+log_file_name = 'octolog' + the_now_local.year + the_now_local.month + the_now_local.day + '.log'
+
 logger = logging.getLogger(__name__) 
-logger.setLevel(logging.INFO)
-file_handler = logging.FileHandler('octostoreprice.log')
-formatter    = logging.Formatter('%(asctime)s : %(levelname)-8s : %(name)s : %(message)s')
+logger.setLevel(logger.info)
+file_handler = logging.FileHandler(log_file_name)
+formatter    = logging.Formatter('%(asctime)s : %(levelname)-8s : %(filename)s : %(message)s')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 

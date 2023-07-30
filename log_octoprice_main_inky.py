@@ -19,14 +19,24 @@ import time
 import logging
 from urllib.request import pathname2url
 
-logging.basicConfig(level=logging.info, file='~/octoprice.log', format='%(asctime)s :: %(levelname)s :: %(message)s')
-logging.info("Starting script.")
+# find current time and convert to year month day etc
+the_now = datetime.datetime.now(datetime.timezone.utc)
+the_now_local = the_now.astimezone(pytz.timezone('Europe/London'))
+
+log_file_name = 'octolog' + the_now_local.year + the_now_local.month + the_now_local.day + '.log'
+
+logger = logging.getLogger(__name__) 
+logger.setLevel(logger.info)
+file_handler = logging.FileHandler(log_file_name)
+formatter    = logging.Formatter('%(asctime)s : %(levelname)-8s : %(filename)s : %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 ##  -- Detect display type automatically
 try:
     inky_display = auto(ask_user=False, verbose=True)
 except TypeError:
-	logging.error("You need to update the Inky library to >= v1.1.0")
+	logger.error("You need to update the Inky library to >= v1.1.0")
 	raise TypeError("You need to update the Inky library to >= v1.1.0")
 
 try:
@@ -34,20 +44,16 @@ try:
 	DB_URI = 'file:{}?mode=rw'.format(pathname2url('agileprices.sqlite'))
 	conn = sqlite3.connect(DB_URI, uri=True)
 	cur = conn.cursor()
-	logging.info("Connected to database.")
+	logger.info("Connected to database.")
 	print('Connected to database...')
 except sqlite3.OperationalError as error:
     # handle missing database 
-	logging.error("Database not found - you need to run store_prices.py first.")
+	logger.error("Database not found - you need to run store_prices.py first.")
 	raise SystemExit('Database not found - you need to run store_prices.py first.') from error
 
 inky_display.set_border(inky_display.WHITE)
 img = Image.new("P", (inky_display.WIDTH, inky_display.HEIGHT))
 draw = ImageDraw.Draw(img)
-
-# find current time and convert to year month day etc
-the_now = datetime.datetime.now(datetime.timezone.utc)
-the_now_local = the_now.astimezone(pytz.timezone('Europe/London'))
 
 the_year = the_now.year
 the_month = the_now.month
@@ -73,7 +79,7 @@ for row in rows:
 
 # get price
 current_price = row[5] # literally this is hardcoded tuple. DONT ADD ANY EXTRA FIELDS TO THAT TABLE on the sqlite db or you'll get something that isn't price.
-logging.info("Current Price: ", current_price)
+logger.info("Current Price: ", current_price)
 
 # Find Next Price
 # find current time and convert to year month day etc
@@ -407,4 +413,4 @@ else: #high res display
 # render the actual image onto the display
 inky_display.set_image(img)
 inky_display.show()
-logging.info("Finished script.")
+logger.info("Finished script.")
