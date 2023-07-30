@@ -4,7 +4,7 @@ import logging
 # find current time and convert to year month day etc
 the_now_local = datetime.now()
 
-log_file_name = 'logfile_' + str(the_now_local.year) + str(the_now_local.month) + str(the_now_local.day) + '.log'
+log_file_name = '/home/pi/logfile_' + str(the_now_local.year) + str(the_now_local.month) + str(the_now_local.day) + '.log'
 
 logger = logging.getLogger(__name__) 
 logger.setLevel(logging.INFO)
