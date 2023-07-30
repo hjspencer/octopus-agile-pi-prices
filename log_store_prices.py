@@ -14,8 +14,15 @@ from urllib.request import pathname2url
 import requests
 import logging
 
-logging.basicConfig(level=logging.info, file='octostoreprice.log', format='%(asctime)s :: %(levelname)s :: %(message)s')
-logging.info("Starting script.")
+logger = logging.getLogger(__name__) 
+logger.setLevel(logging.WARNING)
+file_handler = logging.FileHandler('octostoreprice.log')
+formatter    = logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+#logging.basicConfig(level=logging.info, format='%(asctime)s :: %(levelname)s :: %(message)s', file='octostoreprice.log')
+#logging.info("Starting script.")
 
 # hopefully these won't ever change
 AGILE_TARIFF_BASE = (
@@ -34,7 +41,7 @@ def get_prices_from_api(request_uri: str) -> dict:
     # We will keep trying for over 9 hours and then give up.
 
     print('Requesting Agile prices from Octopus API...')
-    logging.info("Requesting Agile prices from Octopus API.")
+    logger.info("Requesting Agile prices from Octopus API.")
     retry_count = 0
     my_repr = Repr()
     my_repr.maxstring = 80 # let's avoid truncating our error messages too much
@@ -42,7 +49,7 @@ def get_prices_from_api(request_uri: str) -> dict:
     while retry_count <= MAX_RETRIES:
 
         if retry_count == MAX_RETRIES:
-            logging.error("API retry limit exceeded.")
+            logger.error("API retry limit exceeded.")
             raise SystemExit ('API retry limit exceeded.')
 
         try:
@@ -54,7 +61,7 @@ def get_prices_from_api(request_uri: str) -> dict:
                 return response.json()
 
         except requests.exceptions.HTTPError as error:
-            logging.error(('API HTTP error: ' + str(response.status_code) +
+            logger.error(('API HTTP error: ' + str(response.status_code) +
                   ',retrying in ' + str(2**retry_count) + 's'))
             print(('API HTTP error: ' + str(response.status_code) +
                   ',retrying in ' + str(2**retry_count) + 's'))
@@ -62,7 +69,7 @@ def get_prices_from_api(request_uri: str) -> dict:
             retry_count += 1
 
         except requests.exceptions.ConnectionError as error:
-            logging.error(('API HTTP error: ' + my_repr.repr(str(error)) +
+            logger.error(('API HTTP error: ' + my_repr.repr(str(error)) +
                   ', retrying in ' + str(2**retry_count) + 's'))
             print(('API connection error: ' + my_repr.repr(str(error)) +
                   ', retrying in ' + str(2**retry_count) + 's'))
@@ -70,17 +77,17 @@ def get_prices_from_api(request_uri: str) -> dict:
             retry_count += 1
 
         except requests.exceptions.Timeout:
-            logging.error('API request timeout, retrying in ' + str(2**retry_count) + 's')
+            logger.error('API request timeout, retrying in ' + str(2**retry_count) + 's')
             print('API request timeout, retrying in ' + str(2**retry_count) + 's')
             time.sleep(2**retry_count)
             retry_count += 1
 
         except requests.exceptions.RequestException as error:
-            logging.error('API Request error')
+            logger.error('API Request error')
             raise SystemExit('API Request error: ' + str(error)) from error
 
         if success:
-            logging.info('API request successful, status ' + str(response.status_code) + '.')
+            logger.info('API request successful, status ' + str(response.status_code) + '.')
             print('API request successful, status ' + str(response.status_code) + '.')
             break
 
@@ -122,11 +129,11 @@ def insert_data (data: dict):
         lastslot = datetime.strftime(datetime.strptime(
             data['results'][0]['valid_to'],"%Y-%m-%dT%H:%M:%SZ"),"%H:%M on %A %d %b")
         print(str(num_prices_inserted) + ' prices were inserted, ending at ' + lastslot + '.')
-        logging.info(str(num_prices_inserted) + ' prices were inserted, ending at ' + lastslot + '.')
+        logger.info(str(num_prices_inserted) + ' prices were inserted, ending at ' + lastslot + '.')
     else:
         print('No prices were inserted - maybe we have them'
                ' already or octopus are late with their update.')
-        logging.warning('No prices were inserted - maybe we have them already or octopus are late with their update.')
+        logger.warning('No prices were inserted - maybe we have them already or octopus are late with their update.')
 
 
 def insert_record(year: int, month: int, day: int, hour: int, segment: int, price: float, valid_from: str) -> bool:
@@ -175,13 +182,13 @@ def remove_old_prices(age: str):
         if num_old_rows > 0:
             cursor.execute("DELETE FROM prices WHERE valid_from < datetime('now', '-" + age + "')")
             print(str(num_old_rows) + ' unneeded prices from the past were deleted.')
-            logging.info(str(num_old_rows) + ' unneeded prices from the past were deleted.')
+            logger.info(str(num_old_rows) + ' unneeded prices from the past were deleted.')
         else:
             print('There were no old prices to delete.')
-            logging.info('There were no old prices to delete.')
+            logger.info('There were no old prices to delete.')
     except sqlite3.Error as error:
         print('Failed while trying to remove old prices from database: ', error)
-        logging.error('Failed while trying to remove old prices from database: ', error)
+        logger.error('Failed while trying to remove old prices from database: ', error)
 
 
 # let's get the region from the command line and make sure it's allowed!
@@ -207,7 +214,7 @@ L = South West England
 M = Yorkshire""",
                     choices = ['A','B','C','D','E','F','G','P','N','J','H','K','L','M'])
 args = parser.parse_args()
-logging.info('Selected region ' + args.region[0])
+logger.info('Selected region ' + args.region[0])
 print('Selected region ' + args.region[0])
 agile_tariff_region = args.region[0]
 
@@ -222,12 +229,12 @@ try:
     conn = sqlite3.connect(DB_URI, uri=True)
     cursor = conn.cursor()
     print('Connected to database...')
-    logging.info('Connected to database.')
+    logger.info('Connected to database.')
 
 except sqlite3.OperationalError:
     # handle missing database case
     print('No database found. Creating a new one...')
-    logging.warning('No database found. Creating a new one.')
+    logger.warning('No database found. Creating a new one.')
     conn = sqlite3.connect('agileprices.sqlite')
     cursor = conn.cursor()
     # UNIQUE constraint prevents duplication of data on multiple runs of this script
@@ -236,7 +243,7 @@ except sqlite3.OperationalError:
                    "segment INTEGER, price REAL, valid_from STRING UNIQUE ON CONFLICT FAIL)")
     conn.commit()
     print('Database created... ')
-    logging.info('Database created.')
+    logger.info('Database created.')
 
 insert_data(data_rows)
 
@@ -247,4 +254,4 @@ if conn:
     conn.commit()
     conn.close()
 
-logging.info("Finished script.")
+logger.info("Finished script.")
