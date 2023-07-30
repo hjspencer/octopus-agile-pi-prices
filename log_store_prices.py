@@ -15,7 +15,7 @@ import requests
 import logging
 
 logger = logging.getLogger(__name__) 
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
 file_handler = logging.FileHandler('octostoreprice.log')
 formatter    = logging.Formatter('%(asctime)s : %(levelname)-8s : %(name)s : %(message)s')
 file_handler.setFormatter(formatter)
