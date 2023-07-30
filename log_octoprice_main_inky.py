@@ -23,7 +23,7 @@ from urllib.request import pathname2url
 the_now = datetime.datetime.now(datetime.timezone.utc)
 the_now_local = the_now.astimezone(pytz.timezone('Europe/London'))
 
-log_file_name = 'octolog' + str(the_now_local.year) + str(the_now_local.month) + str(the_now_local.day) + '.log'
+log_file_name = 'octolog_' + str(the_now_local.year) + str(the_now_local.month) + str(the_now_local.day) + '.log'
 
 logger = logging.getLogger(__name__) 
 logger.setLevel(logging.INFO)
@@ -79,7 +79,8 @@ for row in rows:
 
 # get price
 current_price = row[5] # literally this is hardcoded tuple. DONT ADD ANY EXTRA FIELDS TO THAT TABLE on the sqlite db or you'll get something that isn't price.
-logger.info("Current Price: ", current_price)
+log_current_price = "Current Price: " +current_price
+logger.info(log_current_price)
 
 # Find Next Price
 # find current time and convert to year month day etc
