@@ -55,7 +55,7 @@ In an SSH terminal (putty etc):
   ```
   @reboot sleep 10; /usr/bin/python3 octopus-agile-pi-prices/octoprice_main_inky.py
   */30 * * * * sleep 20; /usr/bin/python3 octopus-agile-pi-prices/octoprice_main_inky.py > /home/pi/cron.log
-  05 16 * * * /usr/bin/python3 octopus-agile-pi-prices/store_prices.py > /home/pi/cron.log
+  05 16 * * * /usr/bin/python3 octopus-agile-pi-prices/store_prices.py -r E > /home/pi/cron.log
   ```
 
   First line says run the script if you reboot, second line says run every half hour (but delay by 20s to avoid time based issues!),     third line is quite important, runs every day at 4:05pm to get the next set of prices. Nothing unusual here. 
