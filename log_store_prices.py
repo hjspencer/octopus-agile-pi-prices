@@ -14,7 +14,7 @@ from urllib.request import pathname2url
 import requests
 import logging
 
-logging.basicConfig(level=logging.info, file='~/octostoreprice.log', format='%(asctime)s :: %(levelname)s :: %(message)s')
+logging.basicConfig(level=logging.info, file='octostoreprice.log', format='%(asctime)s :: %(levelname)s :: %(message)s')
 logging.info("Starting script.")
 
 # hopefully these won't ever change
