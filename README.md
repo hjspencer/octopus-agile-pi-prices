@@ -53,9 +53,10 @@ In an SSH terminal (putty etc):
 - Run **crontab -e** on the pi and add _something like this_ : 
 
   ```
-  @reboot sleep 10; /usr/bin/python3 octopus-agile-pi-prices/octoprice_main_inky.py
-  */30 * * * * sleep 20; /usr/bin/python3 octopus-agile-pi-prices/octoprice_main_inky.py > /home/pi/cron.log
-  05 16 * * * /usr/bin/python3 octopus-agile-pi-prices/store_prices.py -r E > /home/pi/cron.log
+  @reboot sleep 60; /usr/bin/python3 octopus-agile-pi-prices/store_prices.py -r E > /home/pi/prices.log
+  @reboot sleep 120; /usr/bin/python3 octopus-agile-pi-prices/octoprice_main_inky.py > /home/pi/inky.log
+  */30 * * * * sleep 20; /usr/bin/python3 octopus-agile-pi-prices/octoprice_main_inky.py > /home/pi/inky.log
+  05 16 * * * /usr/bin/python3 octopus-agile-pi-prices/store_prices.py -r E > /home/pi/prices.log
   ```
 
   First line says run the script if you reboot, second line says run every half hour (but delay by 20s to avoid time based issues!),     third line is quite important, runs every day at 4:05pm to get the next set of prices. Nothing unusual here. 
