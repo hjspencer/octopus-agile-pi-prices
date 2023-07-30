@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)  
 
 # set log level
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
 
 # define file handler and set formatter
 file_handler = logging.FileHandler('logfile.log')
