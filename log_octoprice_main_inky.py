@@ -26,7 +26,7 @@ the_now_local = the_now.astimezone(pytz.timezone('Europe/London'))
 log_file_name = 'octolog' + str(the_now_local.year) + str(the_now_local.month) + str(the_now_local.day) + '.log'
 
 logger = logging.getLogger(__name__) 
-logger.setLevel(logger.INFO)
+logger.setLevel(logging.INFO)
 file_handler = logging.FileHandler(log_file_name)
 formatter    = logging.Formatter('%(asctime)s : %(levelname)-8s : %(filename)s : %(message)s')
 file_handler.setFormatter(formatter)
