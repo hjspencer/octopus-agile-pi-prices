@@ -19,7 +19,7 @@ import logging
 the_now = datetime.now(datetime.timezone.utc)
 the_now_local = the_now.astimezone(pytz.timezone('Europe/London'))
 
-log_file_name = 'octolog' + the_now_local.year + the_now_local.month + the_now_local.day + '.log'
+log_file_name = 'octolog' + str(the_now_local.year) + str(the_now_local.month) + str(the_now_local.day) + '.log'
 
 logger = logging.getLogger(__name__) 
 logger.setLevel(logger.info)
