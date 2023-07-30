@@ -10,7 +10,6 @@ import time
 from argparse import RawTextHelpFormatter
 from reprlib import Repr
 from datetime import datetime
-import pytz
 from urllib.request import pathname2url
 import requests
 import logging

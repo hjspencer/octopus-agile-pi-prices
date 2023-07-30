@@ -1,17 +1,16 @@
+from datetime import datetime
 import logging
 
-# Gets or creates a logger
-logger = logging.getLogger(__name__)  
+# find current time and convert to year month day etc
+the_now_local = datetime.now()
 
-# set log level
+log_file_name = 'logfile_' + str(the_now_local.year) + str(the_now_local.month) + str(the_now_local.day) + '.log'
+
+logger = logging.getLogger(__name__) 
 logger.setLevel(logging.INFO)
-
-# define file handler and set formatter
-file_handler = logging.FileHandler('logfile.log')
-formatter    = logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s')
+file_handler = logging.FileHandler(log_file_name)
+formatter    = logging.Formatter('%(asctime)s : %(levelname)-8s : %(filename)s : %(message)s')
 file_handler.setFormatter(formatter)
-
-# add file handler to logger
 logger.addHandler(file_handler)
 
 # Logs
