@@ -79,7 +79,7 @@ for row in rows:
 
 # get price
 current_price = row[5] # literally this is hardcoded tuple. DONT ADD ANY EXTRA FIELDS TO THAT TABLE on the sqlite db or you'll get something that isn't price.
-log_current_price = "Current Price: " +current_price
+log_current_price = "Current Price: " + str(current_price)
 logger.info(log_current_price)
 
 # Find Next Price
